@@ -1,6 +1,6 @@
-from src.config import config
+from config import config
 import psycopg2
-from src.DBManager import DBManager
+from DBManager import DBManager
 from utils import create_db, insert_data
 from get_vacancy import get_vacancies_list, get_vacancies, get_companies
 
