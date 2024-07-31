@@ -10,10 +10,10 @@ class DBManager:
         """gets full list of companies and vacancies count of each"""
         cur = self.conn.cursor()
         cur.execute("""
-            SELECT companies.name, COUNT(vacancies.id)
-            FROM companies
-            JOIN vacancies ON companies.id = vacancies.company_id
-            GROUP BY companies.name;
+            SELECT employers.name, COUNT(vacancies.id)
+            FROM employers
+            JOIN vacancies ON employers.id = vacancies.company_id
+            GROUP BY employers.name;
         """)
         return cur.fetchall()
 
@@ -21,7 +21,7 @@ class DBManager:
         """gets list of vacancies indicating company name, salary and url"""
         cur = self.conn.cursor()
         cur.execute("""
-            SELECT companies.name, vacancies.name, vacancies.salary_min, vacancies.url
+            SELECT job_title, company_name, salary_from, link_to_vacancy
             FROM vacancies
             JOIN companies ON vacancies.company_id = companies.id
         """)
@@ -31,7 +31,7 @@ class DBManager:
         """gets average salary for vacancy"""
         cur = self.conn.cursor()
         cur.execute("""
-            SELECT AVG(salary_min)
+            SELECT AVG(salary_from)
             FROM vacancies
         """)
         return cur.fetchall()
@@ -40,11 +40,11 @@ class DBManager:
         """gets list of vacancies that have the salary higher than average"""
         cur = self.conn.cursor()
         cur.execute("""
-               SELECT vacancies.name, vacancies.salary_min
+               SELECT job_title, salary_from
                FROM vacancies
-               GROUP BY vacancies.name, vacancies.salary_min 
-               HAVING vacancies.salary_min > (SELECT AVG(salary_min) FROM vacancies) 
-               ORDER BY salary_min    
+               GROUP BY vacancies.job_title, vacancies.salary_from 
+               HAVING vacancies.salary_from > (SELECT AVG(salary_from) FROM vacancies) 
+               ORDER BY salary_from    
                 """)
         return cur.fetchall()
 
@@ -53,6 +53,6 @@ class DBManager:
         cur = self.conn.cursor()
         q = """SELECT * 
                FROM vacancies
-               WHERE LOWER(vacancies.name) LIKE %s"""
+               WHERE LOWER(vacancies.job_title) LIKE %s"""
         cur.execute(q, ('%' + keyword.lower() + '%',))
         return cur.fetchall()
